@@ -2,7 +2,6 @@ package com.bd.hotelapp.guest.domain.entity;
 
 import jakarta.persistence.*;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Entity
@@ -57,27 +56,5 @@ public class Guest {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        Guest guest = (Guest) o;
-        return Objects.equals(id, guest.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(id);
-    }
-
-    @Override
-    public String toString() {
-        return "Guest{" +
-                "id=" + id +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", email='" + email + '\'' +
-                '}';
     }
 }
