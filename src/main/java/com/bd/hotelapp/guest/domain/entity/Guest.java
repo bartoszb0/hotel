@@ -22,11 +22,10 @@ public class Guest {
     @Column(name = "email", nullable = false)
     private String email;
 
-    public Guest() {
+    protected Guest() {
     }
 
-    public Guest(UUID id, String firstName, String lastName, String email) {
-        this.id = id;
+    public Guest(String firstName, String lastName, String email) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -34,10 +33,6 @@ public class Guest {
 
     public UUID getId() {
         return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
     }
 
     public String getFirstName() {
