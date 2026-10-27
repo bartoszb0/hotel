@@ -13,13 +13,13 @@ public class RoomType {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
 
-    @Column(name = "capacity", nullable = false)
+    @Column(name = "capacity")
     private Integer capacity;
 
-    @Column(name = "price_per_night", nullable = false)
+    @Column(name = "price_per_night")
     private BigDecimal pricePerNight;
 
     protected RoomType() {

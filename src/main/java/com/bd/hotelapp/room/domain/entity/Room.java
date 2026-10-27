@@ -13,7 +13,7 @@ public class Room {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(name = "number", nullable = false)
+    @Column(name = "number")
     private Integer number;
 
     @ManyToOne(fetch = FetchType.LAZY)
