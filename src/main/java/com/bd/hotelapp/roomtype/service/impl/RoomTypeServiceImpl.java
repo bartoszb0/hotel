@@ -47,6 +47,7 @@ public class RoomTypeServiceImpl implements RoomTypeService {
 
     @Override
     public void deleteRoomType(UUID id) {
-
+        RoomType roomType = getRoomType(id);
+        roomTypeRepository.delete(roomType);
     }
 }

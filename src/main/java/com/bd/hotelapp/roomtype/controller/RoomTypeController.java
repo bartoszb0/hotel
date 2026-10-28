@@ -48,4 +48,10 @@ public class RoomTypeController {
         RoomTypeResponse roomTypeResponse = roomTypeMapper.toResponse(roomType);
         return new ResponseEntity<>(roomTypeResponse, HttpStatus.OK);
     }
+
+    @DeleteMapping(path = "/{roomTypeId}")
+    public ResponseEntity<Void> deleteRoomType(@PathVariable UUID roomTypeId) {
+        roomTypeService.deleteRoomType(roomTypeId);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
 }
