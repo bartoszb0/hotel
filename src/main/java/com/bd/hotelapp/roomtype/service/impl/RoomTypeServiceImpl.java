@@ -9,6 +9,7 @@ import com.bd.hotelapp.roomtype.mapper.RoomTypeMapper;
 import com.bd.hotelapp.roomtype.repository.RoomTypeRepository;
 import com.bd.hotelapp.roomtype.service.RoomTypeService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.UUID;
@@ -35,6 +36,7 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Override
+    @Transactional
     public RoomType createRoomType(CreateRoomTypeCommand createRoomTypeCommand) {
         if (roomTypeRepository.existsByNameIgnoreCase(createRoomTypeCommand.name())) {
             throw new RoomTypeAlreadyExistsException(createRoomTypeCommand.name());
@@ -50,6 +52,7 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Override
+    @Transactional
     public RoomType updateRoomType(UUID id, UpdateRoomTypeCommand updateRoomTypeCommand) {
         RoomType roomType = getRoomType(id);
 
@@ -64,6 +67,7 @@ public class RoomTypeServiceImpl implements RoomTypeService {
     }
 
     @Override
+    @Transactional
     public void deleteRoomType(UUID id) {
         RoomType roomType = getRoomType(id);
         roomTypeRepository.delete(roomType);

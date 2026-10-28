@@ -34,6 +34,12 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public Room getRoom(UUID id) {
+        return roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException(id));
+    }
+
+    @Override
+    @Transactional
     public Room createRoom(CreateRoomCommand createRoomCommand) {
         if (roomRepository.existsByNumber(createRoomCommand.number())) {
             throw new RoomAlreadyExistsException(createRoomCommand.number());
@@ -45,11 +51,6 @@ public class RoomServiceImpl implements RoomService {
         );
 
         return roomRepository.save(room);
-    }
-
-    @Override
-    public Room getRoom(UUID id) {
-        return roomRepository.findById(id).orElseThrow(() -> new RoomNotFoundException(id));
     }
 
     @Override
@@ -73,6 +74,7 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional
     public void deleteRoom(UUID id) {
         Room room = getRoom(id);
         roomRepository.delete(room);
