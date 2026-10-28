@@ -2,8 +2,10 @@ package com.bd.hotelapp.room.controller;
 
 import com.bd.hotelapp.common.web.ApiPaths;
 import com.bd.hotelapp.room.domain.command.CreateRoomCommand;
+import com.bd.hotelapp.room.domain.command.UpdateRoomCommand;
 import com.bd.hotelapp.room.domain.dto.CreateRoomRequest;
 import com.bd.hotelapp.room.domain.dto.RoomResponse;
+import com.bd.hotelapp.room.domain.dto.UpdateRoomRequest;
 import com.bd.hotelapp.room.domain.entity.Room;
 import com.bd.hotelapp.room.mapper.RoomMapper;
 import com.bd.hotelapp.room.service.RoomService;
@@ -45,6 +47,16 @@ public class RoomController {
     @GetMapping(path = "/{roomId}")
     public ResponseEntity<RoomResponse> getRoom(@PathVariable UUID roomId) {
         Room room = roomService.getRoom(roomId);
+        RoomResponse roomResponse = roomMapper.toResponse(room);
+        return new ResponseEntity<>(roomResponse, HttpStatus.OK);
+    }
+
+    @PatchMapping(path = "/{roomId}")
+    public ResponseEntity<RoomResponse> updateRoom(
+            @RequestBody @Valid UpdateRoomRequest updateRoomRequest,
+            @PathVariable UUID roomId) {
+        UpdateRoomCommand updateRoomCommand = roomMapper.toCommand(updateRoomRequest);
+        Room room = roomService.updateRoom(roomId, updateRoomCommand);
         RoomResponse roomResponse = roomMapper.toResponse(room);
         return new ResponseEntity<>(roomResponse, HttpStatus.OK);
     }

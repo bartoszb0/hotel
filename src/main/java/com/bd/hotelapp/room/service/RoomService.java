@@ -1,6 +1,7 @@
 package com.bd.hotelapp.room.service;
 
 import com.bd.hotelapp.room.domain.command.CreateRoomCommand;
+import com.bd.hotelapp.room.domain.command.UpdateRoomCommand;
 import com.bd.hotelapp.room.domain.entity.Room;
 
 import java.util.List;
@@ -14,7 +15,7 @@ public interface RoomService {
 
     Room getRoom(UUID id);
 
-//    Room updateRoom()
+    Room updateRoom(UUID id, UpdateRoomCommand updateRoomCommand);
 
     void deleteRoom(UUID id);
 }

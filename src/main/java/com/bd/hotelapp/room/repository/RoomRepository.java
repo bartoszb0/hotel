@@ -12,6 +12,8 @@ public interface RoomRepository extends JpaRepository<Room, UUID> {
 
     boolean existsByNumber(Integer number);
 
+    boolean existsByNumberAndIdIsNot(Integer number, UUID id);
+
     @Override
     @EntityGraph(attributePaths = "roomType")
     List<Room> findAll();
