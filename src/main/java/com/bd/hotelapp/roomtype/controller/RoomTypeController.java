@@ -2,8 +2,10 @@ package com.bd.hotelapp.roomtype.controller;
 
 import com.bd.hotelapp.common.web.ApiPaths;
 import com.bd.hotelapp.roomtype.domain.command.CreateRoomTypeCommand;
+import com.bd.hotelapp.roomtype.domain.command.UpdateRoomTypeCommand;
 import com.bd.hotelapp.roomtype.domain.dto.CreateRoomTypeRequest;
 import com.bd.hotelapp.roomtype.domain.dto.RoomTypeResponse;
+import com.bd.hotelapp.roomtype.domain.dto.UpdateRoomTypeRequest;
 import com.bd.hotelapp.roomtype.domain.entity.RoomType;
 import com.bd.hotelapp.roomtype.mapper.RoomTypeMapper;
 import com.bd.hotelapp.roomtype.service.RoomTypeService;
@@ -45,6 +47,16 @@ public class RoomTypeController {
     @GetMapping(path = "/{roomTypeId}")
     public ResponseEntity<RoomTypeResponse> getRoomType(@PathVariable UUID roomTypeId) {
         RoomType roomType = roomTypeService.getRoomType(roomTypeId);
+        RoomTypeResponse roomTypeResponse = roomTypeMapper.toResponse(roomType);
+        return new ResponseEntity<>(roomTypeResponse, HttpStatus.OK);
+    }
+
+    @PatchMapping(path = "/{roomTypeId}")
+    public ResponseEntity<RoomTypeResponse> updateRoomType(
+            @RequestBody @Valid UpdateRoomTypeRequest updateRoomTypeRequest, @PathVariable UUID roomTypeId
+    ) {
+        UpdateRoomTypeCommand updateRoomTypeCommand = roomTypeMapper.toCommand(updateRoomTypeRequest);
+        RoomType roomType = roomTypeService.updateRoomType(roomTypeId, updateRoomTypeCommand);
         RoomTypeResponse roomTypeResponse = roomTypeMapper.toResponse(roomType);
         return new ResponseEntity<>(roomTypeResponse, HttpStatus.OK);
     }

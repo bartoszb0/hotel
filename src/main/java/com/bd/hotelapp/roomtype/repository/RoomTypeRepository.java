@@ -8,4 +8,6 @@ import java.util.UUID;
 public interface RoomTypeRepository extends JpaRepository<RoomType, UUID> {
 
     boolean existsByNameIgnoreCase(String name);
+
+    boolean existsByNameIgnoreCaseAndIdIsNot(String name, UUID id);
 }
