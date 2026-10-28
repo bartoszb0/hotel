@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.UUID;
 
 @Service
-public class RomTypeServiceImpl implements RoomTypeService {
+public class RoomTypeServiceImpl implements RoomTypeService {
 
     private final RoomTypeRepository roomTypeRepository;
 
-    public RomTypeServiceImpl(RoomTypeRepository roomTypeRepository) {
+    public RoomTypeServiceImpl(RoomTypeRepository roomTypeRepository) {
         this.roomTypeRepository = roomTypeRepository;
     }
 
