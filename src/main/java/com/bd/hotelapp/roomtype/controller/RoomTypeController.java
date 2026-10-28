@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping(ApiPaths.V1 + "/room-types")
@@ -39,5 +40,12 @@ public class RoomTypeController {
         RoomType roomType = roomTypeService.createRoomType(roomTypeCommand);
         RoomTypeResponse roomTypeResponse = roomTypeMapper.toResponse(roomType);
         return new ResponseEntity<>(roomTypeResponse, HttpStatus.CREATED);
+    }
+
+    @GetMapping(path = "/{roomTypeId}")
+    public ResponseEntity<RoomTypeResponse> getRoomType(@PathVariable UUID roomTypeId) {
+        RoomType roomType = roomTypeService.getRoomType(roomTypeId);
+        RoomTypeResponse roomTypeResponse = roomTypeMapper.toResponse(roomType);
+        return new ResponseEntity<>(roomTypeResponse, HttpStatus.OK);
     }
 }

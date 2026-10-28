@@ -3,6 +3,7 @@ package com.bd.hotelapp.roomtype.service.impl;
 import com.bd.hotelapp.roomtype.domain.command.CreateRoomTypeCommand;
 import com.bd.hotelapp.roomtype.domain.entity.RoomType;
 import com.bd.hotelapp.roomtype.exception.RoomTypeAlreadyExistsException;
+import com.bd.hotelapp.roomtype.exception.RoomTypeNotFoundException;
 import com.bd.hotelapp.roomtype.repository.RoomTypeRepository;
 import com.bd.hotelapp.roomtype.service.RoomTypeService;
 import org.springframework.stereotype.Service;
@@ -26,7 +27,7 @@ public class RomTypeServiceImpl implements RoomTypeService {
 
     @Override
     public RoomType getRoomType(UUID id) {
-        return null;
+        return roomTypeRepository.findById(id).orElseThrow(() -> new RoomTypeNotFoundException(id));
     }
 
     @Override
