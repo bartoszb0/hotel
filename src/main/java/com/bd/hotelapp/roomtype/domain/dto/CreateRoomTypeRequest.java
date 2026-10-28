@@ -15,7 +15,7 @@ public record CreateRoomTypeRequest(
         Integer capacity,
 
         @NotNull(message = "Price per night is required")
-        @Positive(message = "Price par night must be bigger than 0")
+        @Positive(message = "Price per night must be bigger than 0")
         @Digits(integer = 8, fraction = 2, message = "Price per night must have at most 8 digits and 2 decimal places")
         BigDecimal pricePerNight
 ) {
