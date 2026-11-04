@@ -1,5 +1,6 @@
 package com.bd.hotelapp.common.web;
 
+import com.bd.hotelapp.common.exception.BusinessRuleException;
 import com.bd.hotelapp.common.exception.ConflictException;
 import com.bd.hotelapp.common.exception.NotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -55,5 +56,10 @@ public class GlobalExceptionHandler {
                 HttpStatus.CONFLICT,
                 "Operation violates data integrity constraints"
         );
+    }
+
+    @ExceptionHandler(BusinessRuleException.class)
+    public ProblemDetail handleBusinessRule(BusinessRuleException ex) {
+        return ProblemDetail.forStatusAndDetail(HttpStatus.BAD_REQUEST, ex.getMessage());
     }
 }
