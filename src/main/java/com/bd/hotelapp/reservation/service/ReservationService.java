@@ -13,4 +13,6 @@ public interface ReservationService {
     Reservation getReservation(UUID id);
 
     List<Reservation> getReservations(String email);
+
+    Reservation cancelReservation(UUID id);
 }

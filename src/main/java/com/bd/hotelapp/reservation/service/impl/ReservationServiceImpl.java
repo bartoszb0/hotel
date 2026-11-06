@@ -5,10 +5,8 @@ import com.bd.hotelapp.guest.service.GuestService;
 import com.bd.hotelapp.guest.util.EmailNormalizer;
 import com.bd.hotelapp.reservation.domain.command.CreateReservationCommand;
 import com.bd.hotelapp.reservation.domain.entity.Reservation;
-import com.bd.hotelapp.reservation.exception.GuestCountExceedsCapacityException;
-import com.bd.hotelapp.reservation.exception.InvalidStayDateException;
-import com.bd.hotelapp.reservation.exception.ReservationNotFoundException;
-import com.bd.hotelapp.reservation.exception.RoomNotAvailableException;
+import com.bd.hotelapp.reservation.domain.entity.ReservationStatus;
+import com.bd.hotelapp.reservation.exception.*;
 import com.bd.hotelapp.reservation.repository.ReservationRepository;
 import com.bd.hotelapp.reservation.service.ReservationService;
 import com.bd.hotelapp.room.domain.entity.Room;
@@ -86,6 +84,28 @@ public class ReservationServiceImpl implements ReservationService {
     public List<Reservation> getReservations(String email) {
         String normalizedEmail = EmailNormalizer.normalize(email);
         return reservationRepository.findByGuestEmail(normalizedEmail);
+    }
+
+    @Override
+    @Transactional
+    public Reservation cancelReservation(UUID id) {
+        Reservation reservation = getReservation(id);
+
+        validateCancellability(reservation);
+
+        reservation.cancel();
+
+        return reservationRepository.save(reservation);
+    }
+
+    private void validateCancellability(Reservation reservation) {
+        if (reservation.getStatus() == ReservationStatus.CANCELLED) {
+            throw new ReservationAlreadyCancelledException(reservation.getId());
+        }
+
+        if (!LocalDate.now(clock).isBefore(reservation.getCheckIn())) {
+            throw new TooLateForReservationCancelException(reservation.getId());
+        }
     }
 
     private void validateCapacity(Integer guestCount, Room room) {

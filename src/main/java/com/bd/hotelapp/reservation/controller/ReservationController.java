@@ -50,4 +50,11 @@ public class ReservationController {
         List<ReservationResponse> reservationResponses = reservationMapper.toResponse(reservations);
         return new ResponseEntity<>(reservationResponses, HttpStatus.OK);
     }
+
+    @PostMapping("/{reservationId}/cancel")
+    public ResponseEntity<ReservationResponse> cancelReservation(@PathVariable UUID reservationId) {
+        Reservation reservation = reservationService.cancelReservation(reservationId);
+        ReservationResponse reservationResponse = reservationMapper.toResponse(reservation);
+        return new ResponseEntity<>(reservationResponse, HttpStatus.OK);
+    }
 }
