@@ -1,0 +1,628 @@
+{
+  "info": {
+    "name": "Hotel - reservations smoke tests",
+    "_postman_id": "785b6f55-39eb-46b2-bcb9-50ca3d2d343e",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/api/v1"
+    }
+  ],
+  "item": [
+    {
+      "name": "00 Setup: room type Double (cap 2, 300.00)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/room-types",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "room-types"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Double-{{runId}}\",\n  \"capacity\": 2,\n  \"pricePerNight\": 300.00\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "const pad = n => String(n).padStart(2, '0');",
+              "const fmt = d => `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`;",
+              "const plus = days => { const d = new Date(); d.setUTCDate(d.getUTCDate() + days); return fmt(d); };",
+              "",
+              "const runId = Date.now().toString(36);",
+              "pm.collectionVariables.set('runId', runId);",
+              "pm.collectionVariables.set('d30', plus(30));",
+              "pm.collectionVariables.set('d31', plus(31));",
+              "pm.collectionVariables.set('d33', plus(33));",
+              "pm.collectionVariables.set('d35', plus(35));",
+              "pm.collectionVariables.set('d61', plus(61));",
+              "pm.collectionVariables.set('past', plus(-2));",
+              "pm.collectionVariables.set('roomANumber', Math.floor(Math.random() * 900000) + 100000);",
+              "pm.collectionVariables.set('roomBNumber', Math.floor(Math.random() * 900000) + 100000);"
+            ]
+          }
+        },
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('doubleTypeId', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 Setup: room type Single (cap 1, 200.00)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/room-types",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "room-types"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Single-{{runId}}\",\n  \"capacity\": 1,\n  \"pricePerNight\": 200.00\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('singleTypeId', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Setup: room A (Double)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/rooms",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "rooms"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"number\": {{roomANumber}},\n  \"roomTypeId\": \"{{doubleTypeId}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('roomAId', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Setup: room B (Single)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/rooms",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "rooms"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"number\": {{roomBNumber}},\n  \"roomTypeId\": \"{{singleTypeId}}\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('roomBId', pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "R1 Valid reservation -> 201, price = 3 x 300",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/reservations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reservations"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roomId\": \"{{roomAId}}\",\n  \"guestFirstName\": \"Jan\",\n  \"guestLastName\": \"Kowalski\",\n  \"guestEmail\": \"Jan.{{runId}}@Example.com\",\n  \"checkIn\": \"{{d30}}\",\n  \"checkOut\": \"{{d33}}\",\n  \"guestCount\": 2\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "const r = pm.response.json();",
+              "pm.test('totalPrice = 900', () => pm.expect(Number(r.totalPrice)).to.eql(900));",
+              "pm.test('status CONFIRMED', () => pm.expect(r.status).to.eql('CONFIRMED'));",
+              "pm.test('guest has first and last name', () => {",
+              "  pm.expect(r.guest.firstName).to.eql('Jan');",
+              "  pm.expect(r.guest.lastName).to.eql('Kowalski');",
+              "});",
+              "pm.test('email normalized to lower case', () => pm.expect(r.guest.email).to.eql(r.guest.email.toLowerCase()));",
+              "pm.test('room type is nested', () => pm.expect(r.room.roomType.id).to.eql(pm.collectionVariables.get('doubleTypeId')));",
+              "pm.collectionVariables.set('guestId', r.guest.id);",
+              "pm.collectionVariables.set('reservation1Id', r.id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "R2 Same email, different case -> 201, same guest",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/reservations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reservations"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roomId\": \"{{roomBId}}\",\n  \"guestFirstName\": \"Jan\",\n  \"guestLastName\": \"Kowalski\",\n  \"guestEmail\": \"jan.{{runId}}@example.COM\",\n  \"checkIn\": \"{{d30}}\",\n  \"checkOut\": \"{{d31}}\",\n  \"guestCount\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));",
+              "pm.test('same guest id', () => pm.expect(pm.response.json().guest.id).to.eql(pm.collectionVariables.get('guestId')));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "R3 Overlapping dates on room A -> 409",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/reservations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reservations"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roomId\": \"{{roomAId}}\",\n  \"guestFirstName\": \"Anna\",\n  \"guestLastName\": \"Nowak\",\n  \"guestEmail\": \"anna.{{runId}}@example.com\",\n  \"checkIn\": \"{{d31}}\",\n  \"checkOut\": \"{{d35}}\",\n  \"guestCount\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 409', () => pm.response.to.have.status(409));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "R4 Check-in on previous check-out day -> 201",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/reservations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reservations"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roomId\": \"{{roomAId}}\",\n  \"guestFirstName\": \"Anna\",\n  \"guestLastName\": \"Nowak\",\n  \"guestEmail\": \"anna.{{runId}}@example.com\",\n  \"checkIn\": \"{{d33}}\",\n  \"checkOut\": \"{{d35}}\",\n  \"guestCount\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 201', () => pm.response.to.have.status(201));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "R5 Check-in in the past -> 400",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/reservations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reservations"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roomId\": \"{{roomAId}}\",\n  \"guestFirstName\": \"Ola\",\n  \"guestLastName\": \"Lis\",\n  \"guestEmail\": \"ola.{{runId}}@example.com\",\n  \"checkIn\": \"{{past}}\",\n  \"checkOut\": \"{{d30}}\",\n  \"guestCount\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "R6 Check-out equals check-in -> 400",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/reservations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reservations"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roomId\": \"{{roomAId}}\",\n  \"guestFirstName\": \"Ola\",\n  \"guestLastName\": \"Lis\",\n  \"guestEmail\": \"ola.{{runId}}@example.com\",\n  \"checkIn\": \"{{d30}}\",\n  \"checkOut\": \"{{d30}}\",\n  \"guestCount\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "R7 31 nights -> 400",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/reservations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reservations"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roomId\": \"{{roomBId}}\",\n  \"guestFirstName\": \"Ola\",\n  \"guestLastName\": \"Lis\",\n  \"guestEmail\": \"ola.{{runId}}@example.com\",\n  \"checkIn\": \"{{d30}}\",\n  \"checkOut\": \"{{d61}}\",\n  \"guestCount\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "R8 Too many guests for Single -> 400",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/reservations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reservations"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roomId\": \"{{roomBId}}\",\n  \"guestFirstName\": \"Ola\",\n  \"guestLastName\": \"Lis\",\n  \"guestEmail\": \"ola.{{runId}}@example.com\",\n  \"checkIn\": \"{{d33}}\",\n  \"checkOut\": \"{{d35}}\",\n  \"guestCount\": 2\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "R9 Unknown roomId -> 404",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/reservations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reservations"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"roomId\": \"cfa549f4-53e2-40b9-90bc-394985917049\",\n  \"guestFirstName\": \"Ola\",\n  \"guestLastName\": \"Lis\",\n  \"guestEmail\": \"ola.{{runId}}@example.com\",\n  \"checkIn\": \"{{d30}}\",\n  \"checkOut\": \"{{d33}}\",\n  \"guestCount\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 404', () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "R10 Empty body -> 400 with errors map",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/reservations",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "reservations"
+          ]
+        },
+        "body": {
+          "mode": "raw",
+          "raw": "{}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('Status 400', () => pm.response.to.have.status(400));",
+              "pm.test('has errors map', () => pm.expect(pm.response.json().errors).to.be.an('object'));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
