@@ -12,6 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -41,5 +42,12 @@ public class ReservationController {
         Reservation reservation = reservationService.getReservation(id);
         ReservationResponse reservationResponse = reservationMapper.toResponse(reservation);
         return new ResponseEntity<>(reservationResponse, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<ReservationResponse>> getReservationsByEmail(@RequestParam String email) {
+        List<Reservation> reservations = reservationService.getReservations(email);
+        List<ReservationResponse> reservationResponses = reservationMapper.toResponse(reservations);
+        return new ResponseEntity<>(reservationResponses, HttpStatus.OK);
     }
 }

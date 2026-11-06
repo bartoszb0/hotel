@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -27,4 +28,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
     @Override
     @EntityGraph(attributePaths = {"room", "guest", "room.roomType"})
     Optional<Reservation> findById(UUID id);
+
+    @EntityGraph(attributePaths = {"room", "guest", "room.roomType"})
+    List<Reservation> findByGuestEmail(String guestEmail);
 }

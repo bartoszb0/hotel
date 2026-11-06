@@ -6,11 +6,15 @@ import com.bd.hotelapp.reservation.domain.dto.ReservationResponse;
 import com.bd.hotelapp.reservation.domain.entity.Reservation;
 import org.mapstruct.Mapper;
 
+import java.util.List;
+
 @Mapper(componentModel = "spring")
 public interface ReservationMapper {
 
     CreateReservationCommand toCommand(CreateReservationRequest createReservationRequest);
 
     ReservationResponse toResponse(Reservation reservation);
+
+    List<ReservationResponse> toResponse(List<Reservation> reservations);
 
 }

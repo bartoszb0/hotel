@@ -2,6 +2,7 @@ package com.bd.hotelapp.reservation.service.impl;
 
 import com.bd.hotelapp.guest.domain.entity.Guest;
 import com.bd.hotelapp.guest.service.GuestService;
+import com.bd.hotelapp.guest.util.EmailNormalizer;
 import com.bd.hotelapp.reservation.domain.command.CreateReservationCommand;
 import com.bd.hotelapp.reservation.domain.entity.Reservation;
 import com.bd.hotelapp.reservation.exception.GuestCountExceedsCapacityException;
@@ -20,6 +21,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -78,6 +80,12 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     public Reservation getReservation(UUID id) {
         return reservationRepository.findById(id).orElseThrow(() -> new ReservationNotFoundException(id));
+    }
+
+    @Override
+    public List<Reservation> getReservations(String email) {
+        String normalizedEmail = EmailNormalizer.normalize(email);
+        return reservationRepository.findByGuestEmail(normalizedEmail);
     }
 
     private void validateCapacity(Integer guestCount, Room room) {
