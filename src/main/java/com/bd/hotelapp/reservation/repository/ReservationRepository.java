@@ -1,11 +1,13 @@
 package com.bd.hotelapp.reservation.repository;
 
 import com.bd.hotelapp.reservation.domain.entity.Reservation;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.Optional;
 import java.util.UUID;
 
 public interface ReservationRepository extends JpaRepository<Reservation, UUID> {
@@ -22,4 +24,7 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
                               @Param("checkIn") LocalDate checkIn,
                               @Param("checkOut") LocalDate checkOut);
 
+    @Override
+    @EntityGraph(attributePaths = {"room", "guest", "room.roomType"})
+    Optional<Reservation> findById(UUID id);
 }

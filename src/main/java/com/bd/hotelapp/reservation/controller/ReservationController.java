@@ -10,10 +10,9 @@ import com.bd.hotelapp.reservation.service.ReservationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.UUID;
 
 @RestController
 @RequestMapping(ApiPaths.V1 + "/reservations")
@@ -37,4 +36,10 @@ public class ReservationController {
         return new ResponseEntity<>(reservationResponse, HttpStatus.CREATED);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<ReservationResponse> getReservation(@PathVariable UUID id) {
+        Reservation reservation = reservationService.getReservation(id);
+        ReservationResponse reservationResponse = reservationMapper.toResponse(reservation);
+        return new ResponseEntity<>(reservationResponse, HttpStatus.OK);
+    }
 }

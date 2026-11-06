@@ -6,6 +6,7 @@ import com.bd.hotelapp.reservation.domain.command.CreateReservationCommand;
 import com.bd.hotelapp.reservation.domain.entity.Reservation;
 import com.bd.hotelapp.reservation.exception.GuestCountExceedsCapacityException;
 import com.bd.hotelapp.reservation.exception.InvalidStayDateException;
+import com.bd.hotelapp.reservation.exception.ReservationNotFoundException;
 import com.bd.hotelapp.reservation.exception.RoomNotAvailableException;
 import com.bd.hotelapp.reservation.repository.ReservationRepository;
 import com.bd.hotelapp.reservation.service.ReservationService;
@@ -19,6 +20,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
+import java.util.UUID;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -71,6 +73,11 @@ public class ReservationServiceImpl implements ReservationService {
         );
 
         return reservationRepository.save(reservation);
+    }
+
+    @Override
+    public Reservation getReservation(UUID id) {
+        return reservationRepository.findById(id).orElseThrow(() -> new ReservationNotFoundException(id));
     }
 
     private void validateCapacity(Integer guestCount, Room room) {
