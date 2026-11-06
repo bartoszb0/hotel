@@ -3,10 +3,12 @@ package com.bd.hotelapp.guest.service.impl;
 import com.bd.hotelapp.guest.domain.entity.Guest;
 import com.bd.hotelapp.guest.repository.GuestRepository;
 import com.bd.hotelapp.guest.service.GuestService;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Locale;
 
+@Service
 public class GuestServiceImpl implements GuestService {
 
     private final GuestRepository guestRepository;
