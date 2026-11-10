@@ -10,6 +10,7 @@ import com.bd.hotelapp.room.repository.RoomRepository;
 import com.bd.hotelapp.room.service.RoomService;
 import com.bd.hotelapp.roomtype.domain.entity.RoomType;
 import com.bd.hotelapp.roomtype.service.RoomTypeService;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -78,5 +79,10 @@ public class RoomServiceImpl implements RoomService {
     public void deleteRoom(UUID id) {
         Room room = getRoom(id);
         roomRepository.delete(room);
+    }
+
+    @Override
+    public List<Room> findRooms(Specification<Room> specification) {
+        return roomRepository.findAll(specification);
     }
 }

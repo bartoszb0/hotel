@@ -3,6 +3,7 @@ package com.bd.hotelapp.room.service;
 import com.bd.hotelapp.room.domain.command.CreateRoomCommand;
 import com.bd.hotelapp.room.domain.command.UpdateRoomCommand;
 import com.bd.hotelapp.room.domain.entity.Room;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.UUID;
@@ -18,4 +19,6 @@ public interface RoomService {
     Room updateRoom(UUID id, UpdateRoomCommand updateRoomCommand);
 
     void deleteRoom(UUID id);
+
+    List<Room> findRooms(Specification<Room> specification);
 }
