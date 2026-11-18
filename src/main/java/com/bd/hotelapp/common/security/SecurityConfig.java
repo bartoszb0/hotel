@@ -44,7 +44,7 @@ public class SecurityConfig {
                                         AuthorityAuthorizationManager.hasRole("STAFF")
                                 )
                         )
-                        .requestMatchers(V1 + "/reservations/me").hasRole("GUEST")
+                        .requestMatchers(V1 + "/reservations/me/**").hasRole("GUEST")
                         .requestMatchers(HttpMethod.GET, V1 + "/reservations").hasRole("STAFF")
                         .requestMatchers(HttpMethod.POST, V1 + "/reservations/*/cancel").hasAnyRole("GUEST", "STAFF")
                         .requestMatchers(HttpMethod.GET, V1 + "/reservations/*").permitAll()

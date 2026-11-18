@@ -55,6 +55,19 @@ public class ReservationController {
         return new ResponseEntity<>(reservationResponses, HttpStatus.OK);
     }
 
+    @GetMapping("/me/{reservationId}")
+    public ResponseEntity<ReservationResponse> getMyReservation(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable UUID reservationId
+    ) {
+        Reservation reservation = reservationService.getMyReservation(
+                UUID.fromString(jwt.getSubject()),
+                reservationId
+        );
+        ReservationResponse reservationResponse = reservationMapper.toResponse(reservation);
+        return new ResponseEntity<>(reservationResponse, HttpStatus.OK);
+    }
+
     @PostMapping("/me")
     public ResponseEntity<ReservationResponse> createMyReservation(
             @AuthenticationPrincipal Jwt jwt,

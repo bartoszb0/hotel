@@ -71,6 +71,19 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    public Reservation getMyReservation(UUID userId, UUID reservationId) {
+        UUID guestId = userService.getGuestId(userId);
+
+        Reservation reservation = getReservation(reservationId);
+
+        if (!guestId.equals(reservation.getGuest().getId())) {
+            throw new ReservationNotFoundException(reservationId);
+        }
+
+        return reservation;
+    }
+
+    @Override
     public List<Reservation> getAllReservations() {
         return reservationRepository.findAll();
     }
