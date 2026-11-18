@@ -51,8 +51,9 @@ public class AuthServiceImpl implements AuthService {
                 new UsernamePasswordAuthenticationToken(loginCommand.email(), loginCommand.password())
         );
 
+        User user = userService.getUserByEmail(loginCommand.email());
         String role = auth.getAuthorities().iterator().next().getAuthority();
-        String token = jwtTokenService.generateToken(auth.getName(), role);
+        String token = jwtTokenService.generateToken(user.getId(), role);
 
         return new AuthResponse(token, "Bearer", jwtTokenService.getExpiration().toSeconds());
     }

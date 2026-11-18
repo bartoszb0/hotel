@@ -5,6 +5,7 @@ import com.bd.hotelapp.guest.util.EmailNormalizer;
 import com.bd.hotelapp.user.domain.entity.User;
 import com.bd.hotelapp.user.domain.entity.UserRole;
 import com.bd.hotelapp.user.exception.PasswordTooLongException;
+import com.bd.hotelapp.user.exception.UserNotFoundException;
 import com.bd.hotelapp.user.exception.UserWithEmailAlreadyExistsException;
 import com.bd.hotelapp.user.repository.UserRepository;
 import com.bd.hotelapp.user.service.UserService;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -38,6 +40,23 @@ public class UserServiceImpl implements UserService {
     public User createStaffAccount(String email, String rawPassword) {
         return createAccount(email, rawPassword, UserRole.STAFF, null);
     }
+
+    @Override
+    public User getUserByEmail(String email) {
+        String normalizedEmail = EmailNormalizer.normalize(email);
+        return userRepository.findByEmail(normalizedEmail)
+                .orElseThrow(() -> new UserNotFoundException(normalizedEmail));
+    }
+
+    @Override
+    public UUID getGuestId(UUID userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserNotFoundException(userId));
+
+        if (user.getGuest() == null) throw new IllegalStateException("User has no guest profile.");
+
+        return user.getGuest().getId();
+    }
+
 
     private User createAccount(String email, String rawPassword, UserRole role, Guest guest) {
         String normalizedEmail = EmailNormalizer.normalize(email);

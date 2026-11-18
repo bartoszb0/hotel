@@ -2,7 +2,6 @@ package com.bd.hotelapp.reservation.service.impl;
 
 import com.bd.hotelapp.guest.domain.entity.Guest;
 import com.bd.hotelapp.guest.service.GuestService;
-import com.bd.hotelapp.guest.util.EmailNormalizer;
 import com.bd.hotelapp.reservation.domain.command.CreateReservationCommand;
 import com.bd.hotelapp.reservation.domain.entity.Reservation;
 import com.bd.hotelapp.reservation.domain.entity.ReservationStatus;
@@ -11,6 +10,7 @@ import com.bd.hotelapp.reservation.repository.ReservationRepository;
 import com.bd.hotelapp.reservation.service.ReservationService;
 import com.bd.hotelapp.room.domain.entity.Room;
 import com.bd.hotelapp.room.service.RoomService;
+import com.bd.hotelapp.user.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,13 +31,14 @@ public class ReservationServiceImpl implements ReservationService {
     private final ReservationRepository reservationRepository;
     private final Clock clock;
     private final GuestService guestService;
+    private final UserService userService;
 
-
-    public ReservationServiceImpl(RoomService roomService, ReservationRepository reservationRepository, Clock clock, GuestService guestService) {
+    public ReservationServiceImpl(RoomService roomService, ReservationRepository reservationRepository, Clock clock, GuestService guestService, UserService userService) {
         this.roomService = roomService;
         this.reservationRepository = reservationRepository;
         this.clock = clock;
         this.guestService = guestService;
+        this.userService = userService;
     }
 
     @Override
@@ -81,9 +82,9 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
-    public List<Reservation> getReservations(String email) {
-        String normalizedEmail = EmailNormalizer.normalize(email);
-        return reservationRepository.findByGuestEmail(normalizedEmail);
+    public List<Reservation> getMyReservations(UUID userId) {
+        UUID guestId = userService.getGuestId(userId);
+        return reservationRepository.findByGuestId(guestId);
     }
 
     @Override

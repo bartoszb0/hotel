@@ -12,7 +12,7 @@ public interface ReservationService {
 
     Reservation getReservation(UUID id);
 
-    List<Reservation> getReservations(String email);
+    List<Reservation> getMyReservations(UUID userId);
 
     Reservation cancelReservation(UUID id);
 }

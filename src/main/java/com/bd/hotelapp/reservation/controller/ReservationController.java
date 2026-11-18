@@ -48,7 +48,7 @@ public class ReservationController {
 
     @GetMapping("/me")
     public ResponseEntity<List<ReservationResponse>> getMyReservations(@AuthenticationPrincipal Jwt jwt) {
-        List<Reservation> reservations = reservationService.getReservations(jwt.getSubject());
+        List<Reservation> reservations = reservationService.getMyReservations(UUID.fromString(jwt.getSubject()));
         List<ReservationResponse> reservationResponses = reservationMapper.toResponse(reservations);
         return new ResponseEntity<>(reservationResponses, HttpStatus.OK);
     }

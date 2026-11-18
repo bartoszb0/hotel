@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.UUID;
 
 @Service
 public class JwtTokenService {
@@ -26,12 +27,12 @@ public class JwtTokenService {
         this.expiration = expiration;
     }
 
-    public String generateToken(String email, String role) {
+    public String generateToken(UUID id, String role) {
         Instant now = Instant.now(clock);
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("hotelApp")
-                .subject(email)
+                .subject(id.toString())
                 .claim("role", role)
                 .issuedAt(now)
                 .expiresAt(now.plus(expiration))

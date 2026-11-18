@@ -10,6 +10,7 @@ import com.bd.hotelapp.reservation.repository.ReservationRepository;
 import com.bd.hotelapp.room.domain.entity.Room;
 import com.bd.hotelapp.room.service.RoomService;
 import com.bd.hotelapp.roomtype.domain.entity.RoomType;
+import com.bd.hotelapp.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -44,6 +45,9 @@ class ReservationServiceImplTest {
     private RoomService roomService;
     @Mock
     private GuestService guestService;
+    @Mock
+    private UserService userService;
+
 
     private Clock clock;
     private ReservationServiceImpl reservationService;
@@ -51,7 +55,7 @@ class ReservationServiceImplTest {
     @BeforeEach
     void setUp() {
         clock = Clock.fixed(TODAY.atTime(10, 0).atZone(ZONE).toInstant(), ZONE);
-        reservationService = new ReservationServiceImpl(roomService, reservationRepository, clock, guestService);
+        reservationService = new ReservationServiceImpl(roomService, reservationRepository, clock, guestService, userService);
     }
 
     // =====================================================================
