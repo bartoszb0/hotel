@@ -1,5 +1,6 @@
 package com.bd.hotelapp.reservation.service;
 
+import com.bd.hotelapp.reservation.domain.command.CreateMyReservationCommand;
 import com.bd.hotelapp.reservation.domain.command.CreateReservationCommand;
 import com.bd.hotelapp.reservation.domain.entity.Reservation;
 
@@ -13,6 +14,8 @@ public interface ReservationService {
     Reservation getReservation(UUID id);
 
     List<Reservation> getMyReservations(UUID userId);
+
+    Reservation createMyReservation(CreateMyReservationCommand createMyReservationCommand);
 
     Reservation cancelReservation(UUID id);
 }

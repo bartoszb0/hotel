@@ -2,6 +2,7 @@ package com.bd.hotelapp.reservation.service.impl;
 
 import com.bd.hotelapp.guest.domain.entity.Guest;
 import com.bd.hotelapp.guest.service.GuestService;
+import com.bd.hotelapp.reservation.domain.command.CreateMyReservationCommand;
 import com.bd.hotelapp.reservation.domain.command.CreateReservationCommand;
 import com.bd.hotelapp.reservation.domain.entity.Reservation;
 import com.bd.hotelapp.reservation.domain.entity.ReservationStatus;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -44,36 +46,17 @@ public class ReservationServiceImpl implements ReservationService {
     @Override
     @Transactional
     public Reservation createReservation(CreateReservationCommand createReservationCommand) {
-        validateStayDate(createReservationCommand.checkIn(), createReservationCommand.checkOut());
-
-        Room room = roomService.getRoom(createReservationCommand.roomId());
-
-        validateCapacity(createReservationCommand.guestCount(), room);
-        validateRoomAvailability(createReservationCommand.checkIn(), createReservationCommand.checkOut(), room);
-
-        BigDecimal totalPrice = getTotalPrice(
+        return placeReservation(
+                () -> guestService.findOrCreate(
+                        createReservationCommand.guestFirstName(),
+                        createReservationCommand.guestLastName(),
+                        createReservationCommand.guestEmail()
+                ),
+                createReservationCommand.roomId(),
                 createReservationCommand.checkIn(),
                 createReservationCommand.checkOut(),
-                room.getRoomType().getPricePerNight()
+                createReservationCommand.guestCount()
         );
-
-        Guest guest = guestService.findOrCreate(
-                createReservationCommand.guestFirstName(),
-                createReservationCommand.guestLastName(),
-                createReservationCommand.guestEmail()
-        );
-
-        Reservation reservation = new Reservation(
-                room,
-                guest,
-                createReservationCommand.checkIn(),
-                createReservationCommand.checkOut(),
-                createReservationCommand.guestCount(),
-                totalPrice,
-                Instant.now(clock)
-        );
-
-        return reservationRepository.save(reservation);
     }
 
     @Override
@@ -85,6 +68,44 @@ public class ReservationServiceImpl implements ReservationService {
     public List<Reservation> getMyReservations(UUID userId) {
         UUID guestId = userService.getGuestId(userId);
         return reservationRepository.findByGuestId(guestId);
+    }
+
+    @Override
+    @Transactional
+    public Reservation createMyReservation(CreateMyReservationCommand createMyReservationCommand) {
+        return placeReservation(
+                () -> guestService.getGuest(userService.getGuestId(createMyReservationCommand.userId())),
+                createMyReservationCommand.roomId(),
+                createMyReservationCommand.checkIn(),
+                createMyReservationCommand.checkOut(),
+                createMyReservationCommand.guestCount()
+        );
+    }
+
+    private Reservation placeReservation(Supplier<Guest> guestResolver, UUID roomId, LocalDate checkIn, LocalDate checkOut, Integer guestCount) {
+        validateStayDate(checkIn, checkOut);
+
+        Room room = roomService.getRoom(roomId);
+
+        validateCapacity(guestCount, room);
+        validateRoomAvailability(checkIn, checkOut, room);
+
+        BigDecimal totalPrice = getTotalPrice(checkIn, checkOut, room.getRoomType().getPricePerNight());
+
+        // resolved only after all validations pass, so a rejected request never creates a guest
+        Guest guest = guestResolver.get();
+
+        Reservation reservation = new Reservation(
+                room,
+                guest,
+                checkIn,
+                checkOut,
+                guestCount,
+                totalPrice,
+                Instant.now(clock)
+        );
+
+        return reservationRepository.save(reservation);
     }
 
     @Override

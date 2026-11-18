@@ -1,7 +1,9 @@
 package com.bd.hotelapp.reservation.controller;
 
 import com.bd.hotelapp.common.web.ApiPaths;
+import com.bd.hotelapp.reservation.domain.command.CreateMyReservationCommand;
 import com.bd.hotelapp.reservation.domain.command.CreateReservationCommand;
+import com.bd.hotelapp.reservation.domain.dto.CreateMyReservationRequest;
 import com.bd.hotelapp.reservation.domain.dto.CreateReservationRequest;
 import com.bd.hotelapp.reservation.domain.dto.ReservationResponse;
 import com.bd.hotelapp.reservation.domain.entity.Reservation;
@@ -51,6 +53,20 @@ public class ReservationController {
         List<Reservation> reservations = reservationService.getMyReservations(UUID.fromString(jwt.getSubject()));
         List<ReservationResponse> reservationResponses = reservationMapper.toResponse(reservations);
         return new ResponseEntity<>(reservationResponses, HttpStatus.OK);
+    }
+
+    @PostMapping("/me")
+    public ResponseEntity<ReservationResponse> createMyReservation(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestBody @Valid CreateMyReservationRequest createMyReservationRequest
+    ) {
+        CreateMyReservationCommand createMyReservationCommand = reservationMapper.toCommand(
+                createMyReservationRequest,
+                UUID.fromString(jwt.getSubject())
+        );
+        Reservation reservation = reservationService.createMyReservation(createMyReservationCommand);
+        ReservationResponse reservationResponse = reservationMapper.toResponse(reservation);
+        return new ResponseEntity<>(reservationResponse, HttpStatus.CREATED);
     }
 
     @PostMapping("/{reservationId}/cancel")
