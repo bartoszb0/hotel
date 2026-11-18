@@ -1,6 +1,9 @@
 package com.bd.hotelapp.auth.controller;
 
+import com.bd.hotelapp.auth.domain.command.LoginCommand;
 import com.bd.hotelapp.auth.domain.command.RegisterCommand;
+import com.bd.hotelapp.auth.domain.dto.AuthResponse;
+import com.bd.hotelapp.auth.domain.dto.LoginRequest;
 import com.bd.hotelapp.auth.domain.dto.RegisterRequest;
 import com.bd.hotelapp.auth.mapper.AuthMapper;
 import com.bd.hotelapp.auth.service.AuthService;
@@ -36,5 +39,12 @@ public class AuthController {
         User user = authService.register(registerCommand);
         UserResponse userResponse = userMapper.toResponse(user);
         return new ResponseEntity<>(userResponse, HttpStatus.CREATED);
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<AuthResponse> login(@RequestBody @Valid LoginRequest loginRequest) {
+        LoginCommand loginCommand = authMapper.toCommand(loginRequest);
+        AuthResponse authResponse = authService.login(loginCommand);
+        return new ResponseEntity<>(authResponse, HttpStatus.OK);
     }
 }
