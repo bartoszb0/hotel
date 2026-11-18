@@ -31,4 +31,8 @@ public interface ReservationRepository extends JpaRepository<Reservation, UUID> 
 
     @EntityGraph(attributePaths = {"room", "guest", "room.roomType"})
     List<Reservation> findByGuestId(UUID guestId);
+
+    @Override
+    @EntityGraph(attributePaths = {"room", "guest", "room.roomType"})
+    List<Reservation> findAll();
 }

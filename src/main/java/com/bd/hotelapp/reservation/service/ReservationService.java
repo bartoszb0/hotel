@@ -15,6 +15,8 @@ public interface ReservationService {
 
     List<Reservation> getMyReservations(UUID userId);
 
+    List<Reservation> getAllReservations();
+
     Reservation createMyReservation(CreateMyReservationCommand createMyReservationCommand);
 
     Reservation cancelReservation(UUID id);

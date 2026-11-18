@@ -75,4 +75,11 @@ public class ReservationController {
         ReservationResponse reservationResponse = reservationMapper.toResponse(reservation);
         return new ResponseEntity<>(reservationResponse, HttpStatus.OK);
     }
+
+    @GetMapping()
+    public ResponseEntity<List<ReservationResponse>> getAllReservations() {
+        List<Reservation> reservations = reservationService.getAllReservations();
+        List<ReservationResponse> reservationResponses = reservationMapper.toResponse(reservations);
+        return new ResponseEntity<>(reservationResponses, HttpStatus.OK);
+    }
 }

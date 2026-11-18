@@ -71,6 +71,11 @@ public class ReservationServiceImpl implements ReservationService {
     }
 
     @Override
+    public List<Reservation> getAllReservations() {
+        return reservationRepository.findAll();
+    }
+
+    @Override
     @Transactional
     public Reservation createMyReservation(CreateMyReservationCommand createMyReservationCommand) {
         return placeReservation(
