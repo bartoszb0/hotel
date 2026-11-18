@@ -6,6 +6,9 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.authorization.AuthenticatedAuthorizationManager;
+import org.springframework.security.authorization.AuthorityAuthorizationManager;
+import org.springframework.security.authorization.AuthorizationManagers;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -35,7 +38,12 @@ public class SecurityConfig {
                         .requestMatchers(V1 + "/room-types/**", V1 + "/rooms/**").hasRole("STAFF")
 
                         // reservations
-                        .requestMatchers(HttpMethod.POST, V1 + "/reservations").permitAll()
+                        .requestMatchers(HttpMethod.POST, V1 + "/reservations").access(
+                                AuthorizationManagers.anyOf(
+                                        AuthenticatedAuthorizationManager.anonymous(),
+                                        AuthorityAuthorizationManager.hasRole("STAFF")
+                                )
+                        )
                         .requestMatchers(V1 + "/reservations/me").hasRole("GUEST")
                         .requestMatchers(HttpMethod.GET, V1 + "/reservations").hasRole("STAFF")
                         .requestMatchers(HttpMethod.POST, V1 + "/reservations/*/cancel").hasAnyRole("GUEST", "STAFF")
