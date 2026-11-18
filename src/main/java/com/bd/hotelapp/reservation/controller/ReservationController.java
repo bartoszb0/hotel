@@ -10,6 +10,8 @@ import com.bd.hotelapp.reservation.service.ReservationService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -44,9 +46,9 @@ public class ReservationController {
         return new ResponseEntity<>(reservationResponse, HttpStatus.OK);
     }
 
-    @GetMapping
-    public ResponseEntity<List<ReservationResponse>> getReservationsByEmail(@RequestParam String email) {
-        List<Reservation> reservations = reservationService.getReservations(email);
+    @GetMapping("/me")
+    public ResponseEntity<List<ReservationResponse>> getMyReservations(@AuthenticationPrincipal Jwt jwt) {
+        List<Reservation> reservations = reservationService.getReservations(jwt.getSubject());
         List<ReservationResponse> reservationResponses = reservationMapper.toResponse(reservations);
         return new ResponseEntity<>(reservationResponses, HttpStatus.OK);
     }
